@@ -1,0 +1,37 @@
+# Django-related files and directories
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+media/
+staticfiles/
+*.sqlite3
+
+# Project dependencies
+venv/
+env/
+*/.env
+/.vscode
+
+# IDE files
+.idea/
+.vscode/
+*.pydevproject
+*.pydevprojectc
+*.project
+*.pytch
+
+# Compiled files
+*.pyc
+*.pyd
+*.pyo
+*.so
+*.pyc$
+*.pyo$
+*.exe
+
+# Windows-specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
