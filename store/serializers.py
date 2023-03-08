@@ -19,11 +19,12 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'title', 'price', 'price_with_tax', 'collection']
+        fields = ['id', 'title', 'description', 'slug',
+                  'unit_price', 'inventory', 'price_with_tax', 'collection']
 
     # change the name of field
-    price = serializers.DecimalField(
-        max_digits=6, decimal_places=2, source="unit_price")
+    # price = serializers.DecimalField(
+    #     max_digits=6, decimal_places=2, source="unit_price")
 
     # creating new field for product model
     price_with_tax = serializers.SerializerMethodField(
@@ -33,10 +34,10 @@ class ProductSerializer(serializers.ModelSerializer):
     # collection = CollectionSerializer()
 
     # # To Print Hyperlink for collection
-    collection = serializers.HyperlinkedRelatedField(
-        queryset=Collection.objects.all(),
-        view_name='collection-detail'
-    )
+    # collection = serializers.HyperlinkedRelatedField(
+    #     queryset=Collection.objects.all(),
+    #     view_name='collection-detail'
+    # )
 
     def calculate_tax(self, product: Product):
         return product.unit_price * Decimal(1.1)
