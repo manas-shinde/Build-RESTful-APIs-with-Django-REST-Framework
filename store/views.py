@@ -1,3 +1,4 @@
+from django.db.models.aggregates import Count
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -52,9 +53,46 @@ def product_detail(request, id):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view()
+@api_view(['GET', 'POST'])
+def collection_list(request):
+    if request.method == "GET":
+        queryset = Collection.objects.annotate(
+            products_count=Count('products')).all()
+        serialier = CollectionSerializer(
+            queryset, many=True)
+        return Response(serialier.data, status=status.HTTP_200_OK)
+    elif request.method == "POST":
+        serializer = CollectionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(data=serialier.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
 def collection_details(request, pk):
-    # return Response("OK")
-    collections = get_object_or_404(Collection, pk=int(pk))
-    serializer = CollectionSerializer(collections)
-    return Response(serializer.data)
+    collections = get_object_or_404(
+        Collection.objects.annotate(
+            products_count=Count('products')), pk=pk)
+
+    if request.method == "GET":
+        # Get serialize object
+        serializer = CollectionSerializer(collections)
+
+        # Return the serializer object data with status code 200
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == "PUT":
+        # De-serialize the object
+        serializer = CollectionSerializer(
+            data=request.data, instance=collections)
+
+        # validate the object
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save()
+
+    elif request.method == "DELETE":
+        if collections.products.count() > 0:
+            return Response({'error': 'Collection cannot be deleted because it includes one or more products.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        collections.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
