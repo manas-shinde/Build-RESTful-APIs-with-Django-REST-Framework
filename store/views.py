@@ -2,11 +2,27 @@ from django.db.models.aggregates import Count
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 
 from .models import Product, Collection
 from .serializers import ProductSerializer, CollectionSerializer
+
+
+# Belowed are Generie-based view
+
+
+class ProductsList(ListCreateAPIView):
+    def get_queryset(self):
+        return Product.objects.select_related('collection').all()
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+    def get_serializer_class(self):
+        return ProductSerializer
+
 
 # Belowed are class-based views
 
@@ -57,6 +73,22 @@ class ProductDetails(APIView):
             return Response({'can not delete this product becase order item are related to it.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# Generie based view
+
+
+class CollectionList(ListCreateAPIView):
+    # If you are not changing the serializer class based on user type then you can define this serializer class name with one line only
+    serializer_class = CollectionSerializer
+    # def get_serializer_class(self):
+    #     return CollectionSerializer
+
+    # same for queryset
+    queryset = Collection.objects.annotate(
+        products_count=Count('products')).all()
+    # def get_queryset(self):
+    #     return Collection.objects.annotate(
+    #         products_count=Count('products')).all()
 
 # Belowed are method based view
 
