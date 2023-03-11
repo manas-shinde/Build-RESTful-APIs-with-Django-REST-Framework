@@ -11,12 +11,19 @@ from rest_framework import status
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Product, Collection, OrderItem, Review, Cart
-from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer
+from .models import Product, Collection, OrderItem, Review, Cart, CartItem
+from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer
 from .filters import ProductFilter
 from .pagination import ProductPagination
 
 # ModelViewset
+
+
+class CartItemViewSet(ModelViewSet):
+    serializer_class = CartItemSerializer
+
+    def get_queryset(self):
+        return CartItem.objects.filter(cart_id=self.kwargs['cart_pk']).select_related('product')
 
 
 class CartViewSet(CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, GenericViewSet):
