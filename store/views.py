@@ -8,15 +8,21 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .models import Product, Collection, OrderItem, Review
-from .serializers import ProductSerializer, CollectionSerializer, ReviewSerialzer
+from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer
 
 # ModelViewset
 
 
 class ReviewViewSet(ModelViewSet):
-    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
 
-    serializer_class = ReviewSerialzer
+    # To display reviews for specific product only
+    def get_queryset(self):
+        return Review.objects.filter(product_id=self.kwargs['product_pk'])
+
+    # To access the product id from the url
+    def get_serializer_context(self):
+        return {'product_id': self.kwargs['product_pk']}
 
 
 class ProductViewSet(ModelViewSet):
