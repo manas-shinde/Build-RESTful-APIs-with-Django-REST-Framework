@@ -6,6 +6,7 @@ from . import views
 router = routers.DefaultRouter()
 router.register('products', viewset=views.ProductViewSet, basename='products')
 router.register('collections', viewset=views.CollectionViewSet)
+router.register('carts', views.CartViewSet)
 
 product_router = routers.NestedDefaultRouter(
     router, r'products', lookup='product')
@@ -14,5 +15,6 @@ product_router.register('reviews', views.ReviewViewSet,
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('carts/', view=views.CartSerializer),
     path('', include(product_router.urls))
 ]
