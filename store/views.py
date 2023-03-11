@@ -7,7 +7,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -35,11 +35,13 @@ class ProductViewSet(ModelViewSet):
 
     serializer_class = ProductSerializer
 
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
 
     filterset_class = ProductFilter
 
     search_fields = ['title', 'description']
+
+    ordering_fields = ['unit_price', 'last_update']
     # def get_queryset(self):
     #     """Customize filter for product list based on collection id
 
