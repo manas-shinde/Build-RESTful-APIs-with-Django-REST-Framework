@@ -8,12 +8,12 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.filters import SearchFilter, OrderingFilter
-
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Product, Collection, OrderItem, Review
 from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer
 from .filters import ProductFilter
+from .pagination import ProductPagination
 
 # ModelViewset
 
@@ -41,7 +41,9 @@ class ProductViewSet(ModelViewSet):
 
     search_fields = ['title', 'description']
 
-    ordering_fields = ['unit_price', 'last_update']
+    ordering_fields = ['id', 'unit_price', 'last_update']
+
+    pagination_class = ProductPagination
     # def get_queryset(self):
     #     """Customize filter for product list based on collection id
 
