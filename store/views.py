@@ -8,6 +8,7 @@ from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyM
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import action
 
 
 from .models import Product, Collection, OrderItem, Review, Cart, CartItem, Customer
@@ -46,6 +47,20 @@ class CustomerViewSet(CreateModelMixin,
     queryset = Customer.objects.all()
 
     serializer_class = CustomerSerializer
+
+    @action(detail=False, methods=['GET', 'PUT'])
+    def me(self, requset):
+        (customer, created) = Customer.objects.get_or_create(
+            user_id=requset.user.id)
+
+        if requset.method == "GET":
+            serializer = CustomerSerializer(customer)
+            return Response(serializer.data)
+        elif requset.method == "PUT":
+            serializer = CustomerSerializer(customer, data=requset.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
 
 
 class CartViewSet(CreateModelMixin,
