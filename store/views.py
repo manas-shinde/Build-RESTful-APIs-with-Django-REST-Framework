@@ -4,16 +4,17 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, UpdateModelMixin
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import action
 
 
-from .models import Product, Collection, OrderItem, Review, Cart, CartItem
+from .models import Product, Collection, OrderItem, Review, Cart, CartItem, Customer
 from .filters import ProductFilter
 from .pagination import ProductPagination
-from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer
+from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, CustomerSerializer
 
 # ModelViewset
 
@@ -37,6 +38,29 @@ class CartItemViewSet(ModelViewSet):
             .select_related('product')
 
 # Using specific ModelMixin's becase we dont want to show all carts to every user.
+
+
+class CustomerViewSet(CreateModelMixin,
+                      RetrieveModelMixin,
+                      UpdateModelMixin,
+                      GenericViewSet):
+    queryset = Customer.objects.all()
+
+    serializer_class = CustomerSerializer
+
+    @action(detail=False, methods=['GET', 'PUT'])
+    def me(self, requset):
+        (customer, created) = Customer.objects.get_or_create(
+            user_id=requset.user.id)
+
+        if requset.method == "GET":
+            serializer = CustomerSerializer(customer)
+            return Response(serializer.data)
+        elif requset.method == "PUT":
+            serializer = CustomerSerializer(customer, data=requset.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
 
 
 class CartViewSet(CreateModelMixin,
