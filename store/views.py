@@ -11,10 +11,10 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 
-from .models import Product, Collection, OrderItem, Review, Cart, CartItem, Customer
+from .models import Order, Product, Collection, OrderItem, Review, Cart, CartItem, Customer
 from .filters import ProductFilter
 from .pagination import ProductPagination
-from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, CustomerSerializer
+from .serializers import OrderSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, CustomerSerializer
 from .permissions import FullDjangoModelPermissions, IsAdminOrReadOnly
 
 # ModelViewset
@@ -147,3 +147,9 @@ class CustomerViewSet(ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
+
+
+class OrderViewSet(ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
