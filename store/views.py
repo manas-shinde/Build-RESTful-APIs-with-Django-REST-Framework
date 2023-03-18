@@ -9,12 +9,13 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
-
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 
 from .models import Product, Collection, OrderItem, Review, Cart, CartItem, Customer
 from .filters import ProductFilter
 from .pagination import ProductPagination
 from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, CustomerSerializer
+from .permissions import FullDjangoModelPermissions, IsAdminOrReadOnly
 
 # ModelViewset
 
@@ -38,29 +39,6 @@ class CartItemViewSet(ModelViewSet):
             .select_related('product')
 
 # Using specific ModelMixin's becase we dont want to show all carts to every user.
-
-
-class CustomerViewSet(CreateModelMixin,
-                      RetrieveModelMixin,
-                      UpdateModelMixin,
-                      GenericViewSet):
-    queryset = Customer.objects.all()
-
-    serializer_class = CustomerSerializer
-
-    @action(detail=False, methods=['GET', 'PUT'])
-    def me(self, requset):
-        (customer, created) = Customer.objects.get_or_create(
-            user_id=requset.user.id)
-
-        if requset.method == "GET":
-            serializer = CustomerSerializer(customer)
-            return Response(serializer.data)
-        elif requset.method == "PUT":
-            serializer = CustomerSerializer(customer, data=requset.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data)
 
 
 class CartViewSet(CreateModelMixin,
@@ -97,6 +75,8 @@ class ProductViewSet(ModelViewSet):
     ordering_fields = ['id', 'unit_price', 'last_update']
 
     pagination_class = ProductPagination
+
+    permission_classes = [IsAdminOrReadOnly]
     # def get_queryset(self):
     #     """Customize filter for product list based on collection id
 
@@ -129,6 +109,16 @@ class CollectionViewSet(ModelViewSet):
         products_count=Count('products')).all()
 
     serializer_class = CollectionSerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+    def get_permissions(self):
+        """This method is used to applay sepcific validation only on sum points only.
+        Like for just retriving data user not needs to be authorized but to update entites user needs to be authorized
+
+        """
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
     def destroy(self, request, *args, **kwargs):
         collection = get_object_or_404(Collection, pk=kwargs["pk"])
@@ -136,3 +126,24 @@ class CollectionViewSet(ModelViewSet):
             return Response({'error': 'Collection cannot be deleted because it includes one or more products.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
         return super().destroy(request, *args, **kwargs)
+
+
+class CustomerViewSet(ModelViewSet):
+    queryset = Customer.objects.all()
+
+    serializer_class = CustomerSerializer
+    permission_classes = [FullDjangoModelPermissions]
+
+    @action(detail=False, methods=['GET', 'PUT'], permission_classes=[IsAuthenticated])
+    def me(self, requset):
+        (customer, created) = Customer.objects.get_or_create(
+            user_id=requset.user.id)
+
+        if requset.method == "GET":
+            serializer = CustomerSerializer(customer)
+            return Response(serializer.data)
+        elif requset.method == "PUT":
+            serializer = CustomerSerializer(customer, data=requset.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
