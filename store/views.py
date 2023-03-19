@@ -150,7 +150,15 @@ class CustomerViewSet(ModelViewSet):
 
 
 class OrderViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    # Methods supported by order endpoint
+    http_method_names = ['get', 'patch', 'delete', 'head', 'option']
+
+    def get_permissions(self):
+        # TO update and delete order user should be super user
+        if self.request.method in ['PATCH', 'DELETE']:
+            return [IsAdminUser()]
+
+        return [IsAuthenticated()]
 
     def create(self, request, *args, **kwargs):
         # Validate the request data with CreateOrderSerializer
