@@ -150,39 +150,27 @@ class CustomerViewSet(ModelViewSet):
 
 
 class OrderViewSet(ModelViewSet):
-    # Methods supported by order endpoint
     http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options']
 
     def get_permissions(self):
-        # TO update and delete order user should be super user
         if self.request.method in ['PATCH', 'DELETE']:
             return [IsAdminUser()]
-
         return [IsAuthenticated()]
 
     def create(self, request, *args, **kwargs):
-        # Validate the request data with CreateOrderSerializer
-        serilaizer = CreateOrderSerializer(
+        serializer = CreateOrderSerializer(
             data=request.data,
-            context={
-                'user_id': self.request.user.id
-            }
-        )
-        serilaizer.is_valid(raise_exception=True)
-        order: Order = serilaizer.save()
-
-        # After Saving the order , retrun data with the OrderSerializer structure.
-        serilaizer = OrderSerializer(data=order)
-        serilaizer.is_valid(raise_exception=True)
-        return Response(data=serilaizer.data, status=status.HTTP_201_CREATED)
+            context={'user_id': self.request.user.id})
+        serializer.is_valid(raise_exception=True)
+        order = serializer.save()
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return CreateOrderSerializer
-
-        if self.request.method == 'PATCH':
+        elif self.request.method == 'PATCH':
             return UpdateOrderSerializer
-
         return OrderSerializer
 
     def get_queryset(self):
