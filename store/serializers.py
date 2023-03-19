@@ -1,6 +1,8 @@
 from decimal import Decimal
 from django.db import transaction
 from rest_framework import serializers
+
+from .signals import order_created
 from .models import Order, OrderItem, Product, Collection, Review, Cart, CartItem, Customer
 
 
@@ -151,7 +153,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class CreateOrderSerializer(serializers.Serializer):
     cart_id = serializers.UUIDField()
 
-    def validate_cart_id(self, cart_id: str) -> cart_id:
+    def validate_cart_id(self, cart_id: str):
         """So we are using this method to not create a empty order item.
         1. we check that cart_id is exists or not
         2. If cart id exists then check that have items present in it or not.
@@ -172,7 +174,7 @@ class CreateOrderSerializer(serializers.Serializer):
                 'The cart is empty.So cant create a order for same.')
         return cart_id
 
-    def save(self, **kwargs) -> Order:
+    def save(self, **kwargs):
         with transaction.atomic():
             # Performating these saving and updating database values with transction object means either all operations will perform or not
             cart_id = self.validated_data['cart_id']
@@ -197,6 +199,8 @@ class CreateOrderSerializer(serializers.Serializer):
             OrderItem.objects.bulk_create(order_items)
 
             Cart.objects.filter(pk=cart_id).delete()
+
+            order_created.send(self.__class__, order=order)
 
             return order
 
