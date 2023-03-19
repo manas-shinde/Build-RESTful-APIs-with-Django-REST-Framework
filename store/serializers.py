@@ -151,7 +151,28 @@ class OrderSerializer(serializers.ModelSerializer):
 class CreateOrderSerializer(serializers.Serializer):
     cart_id = serializers.UUIDField()
 
-    def save(self, **kwargs):
+    def validate_cart_id(self, cart_id: str) -> cart_id:
+        """So we are using this method to not create a empty order item.
+        1. we check that cart_id is exists or not
+        2. If cart id exists then check that have items present in it or not.
+
+        Args:
+            cart_id (_type_): str
+
+        Raises:
+            serializers.ValidationError: 1. for non existing cart id ,2. empty cart items.
+        Returns:
+            _type_: str
+        """
+        if not Cart.objects.filter(pk=cart_id).exists():
+            raise serializers.ValidationError(
+                f"No cart exists with the given ID :{cart_id} not found.")
+        if CartItem.objects.filter(cart_id=cart_id).count() == 0:
+            raise serializers.ValidationError(
+                'The cart is empty.So cant create a order for same.')
+        return cart_id
+
+    def save(self, **kwargs) -> Order:
         with transaction.atomic():
             # Performating these saving and updating database values with transction object means either all operations will perform or not
             cart_id = self.validated_data['cart_id']
@@ -174,4 +195,7 @@ class CreateOrderSerializer(serializers.Serializer):
                 ) for item in cart_items
             ]
             OrderItem.objects.bulk_create(order_items)
+
             Cart.objects.filter(pk=cart_id).delete()
+
+            return order
