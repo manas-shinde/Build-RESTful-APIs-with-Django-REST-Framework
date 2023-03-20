@@ -1,16 +1,11 @@
 from decimal import Decimal
 from django.db import transaction
 from rest_framework import serializers
-
 from .signals import order_created
-from .models import Order, OrderItem, Product, Collection, Review, Cart, CartItem, Customer
+from .models import Cart, CartItem, Customer, Order, OrderItem, Product, Collection, Review
 
 
 class CollectionSerializer(serializers.ModelSerializer):
-    # Instead of defining the variable again we'll just use the ModelSerialzer class
-    #  id = serializers.IntegerField()
-    #  title = serializers.CharField(max_length=255)
-
     class Meta:
         model = Collection
         fields = ['id', 'title', 'products_count']
@@ -19,29 +14,13 @@ class CollectionSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    # Instead of defining the variable again we'll just use the ModelSerialzer class
-
     class Meta:
         model = Product
-        fields = ['id', 'title', 'description', 'slug',
-                  'unit_price', 'inventory', 'price_with_tax', 'collection']
+        fields = ['id', 'title', 'description', 'slug', 'inventory',
+                  'unit_price', 'price_with_tax', 'collection']
 
-    # change the name of field
-    # price = serializers.DecimalField(
-    #     max_digits=6, decimal_places=2, source="unit_price")
-
-    # creating new field for product model
     price_with_tax = serializers.SerializerMethodField(
         method_name='calculate_tax')
-
-    # To print Nested collection object
-    # collection = CollectionSerializer()
-
-    # # To Print Hyperlink for collection
-    # collection = serializers.HyperlinkedRelatedField(
-    #     queryset=Collection.objects.all(),
-    #     view_name='collection-detail'
-    # )
 
     def calculate_tax(self, product: Product):
         return product.unit_price * Decimal(1.1)
@@ -64,39 +43,38 @@ class SimpleProductSerializer(serializers.ModelSerializer):
 
 
 class CartItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CartItem
-        fields = ['id', 'quantity', 'product', 'total_price']
-
     product = SimpleProductSerializer()
     total_price = serializers.SerializerMethodField()
 
     def get_total_price(self, cart_item: CartItem):
         return cart_item.quantity * cart_item.product.unit_price
 
+    class Meta:
+        model = CartItem
+        fields = ['id', 'product', 'quantity', 'total_price']
+
 
 class CartSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
+    items = CartItemSerializer(many=True, read_only=True)
+    total_price = serializers.SerializerMethodField()
+
+    def get_total_price(self, cart):
+        return sum([item.quantity * item.product.unit_price for item in cart.items.all()])
 
     class Meta:
         model = Cart
-        fields = ['id', 'items', 'cart_items_total']
-
-    id = serializers.UUIDField(read_only=True)
-    items = CartItemSerializer(many=True, read_only=True)
-    cart_items_total = serializers.SerializerMethodField()
-
-    def get_cart_items_total(self, cart: Cart):
-        return sum([item.quantity * item.product.unit_price for item in cart.items.all()])
+        fields = ['id', 'items', 'total_price']
 
 
 class AddCartItemSerializer(serializers.ModelSerializer):
     product_id = serializers.IntegerField()
 
-    def validate_product_id(self, data):
-        if not Product.objects.filter(pk=data).exists():
+    def validate_product_id(self, value):
+        if not Product.objects.filter(pk=value).exists():
             raise serializers.ValidationError(
-                f"No product with the given ID {data} present in databases.")
-        return data
+                'No product with the given ID was found.')
+        return value
 
     def save(self, **kwargs):
         cart_id = self.context['cart_id']
@@ -123,7 +101,7 @@ class AddCartItemSerializer(serializers.ModelSerializer):
 class UpdateCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
-        field = ['quantity']
+        fields = ['quantity']
 
 
 class CustomerSerializer(serializers.ModelSerializer):

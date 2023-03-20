@@ -41,14 +41,12 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'djoser',
-    'rest_framework_simplejwt',
-    'rest_framework_nested',
     'playground',
     'debug_toolbar',
     'store',
     'tags',
     'likes',
-    'core'
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -95,7 +93,7 @@ WSGI_APPLICATION = 'storefront.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'storefront2',
+        'NAME': 'storefront3',
         'HOST': 'localhost',
         'USER': 'root',
         'PASSWORD': 'password'
@@ -158,7 +156,7 @@ AUTH_USER_MODEL = 'core.User'
 DJOSER = {
     'SERIALIZERS': {
         'user_create': 'core.serializers.UserCreateSerializer',
-        'current_user': 'core.serializers.UserSerializer'
+        'current_user': 'core.serializers.UserSerializer',
     }
 }
 
