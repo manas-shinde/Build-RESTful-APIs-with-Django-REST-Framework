@@ -7,4 +7,4 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
       - run: pip install -r requirements.txt # install all our dependencies for the project
-      - run: pytest ./store/tests/runtests.sh # run pytest test
+      - run: ./store/tests/runtests.sh # run shell script to run all tests
