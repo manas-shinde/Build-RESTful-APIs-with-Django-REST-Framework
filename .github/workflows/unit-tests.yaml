@@ -2,9 +2,9 @@ name: Unit-tests
 
 on:
   push:
-    branches: ["automated_testing"]
+    branches: [""]
   pull_request:
-    branches: ["automated_testing"]
+    branches: [""]
 
 jobs:
   build:
