@@ -16,7 +16,8 @@ from .serializers import AddCartItemSerializer, CartItemSerializer, CartSerializ
 
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.prefetch_related('images').all()
+    # Removed 'prefetch_related' to check optimization with locust
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
