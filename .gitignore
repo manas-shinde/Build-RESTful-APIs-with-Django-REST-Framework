@@ -15,6 +15,7 @@ env/
 /.vscode
 /static/
 /media/
+general.log
 
 # IDE files
 .idea/
