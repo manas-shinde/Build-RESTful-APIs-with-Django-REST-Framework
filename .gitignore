@@ -13,6 +13,8 @@ venv/
 env/
 */.env
 /.vscode
+/static/
+/media/
 
 # IDE files
 .idea/
