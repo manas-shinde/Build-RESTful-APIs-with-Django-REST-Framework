@@ -4,5 +4,5 @@ from . import views
 
 # URLConf
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='core/index.html'))
+    path('', TemplateView.as_view(template_name='core/homepage.html'))
 ]
