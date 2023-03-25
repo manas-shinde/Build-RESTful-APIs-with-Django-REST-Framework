@@ -24,10 +24,13 @@ virtualization should be enable to run docker container
 4. User , User Group
 5. Image Upload ( not configured )
 
-• Authentication : JWT
+• Authentication : JWT (JSON Token)
+
 • Parallel Tasking -> Celery
+
 • Cache -> Redis
-• Database -> PostgreSQL
+
+• Database -> MySQL
 
 when you start locally :
 
