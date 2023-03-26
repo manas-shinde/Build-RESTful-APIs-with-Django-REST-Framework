@@ -2,7 +2,7 @@ name: Django CI
 
 on:
   push:
-    branches: ["preparing_for_production"]
+    branches: ["main"]
   pull_request:
     branches: ["main"]
 
