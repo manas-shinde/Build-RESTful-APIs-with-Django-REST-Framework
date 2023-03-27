@@ -25,7 +25,7 @@ The repository covers topics such as setting up a Django project, creating seria
 
 ## when you start locally :
 
-```
+```bash
 mysql -u root -p
 
 create database storefront3;
@@ -63,27 +63,44 @@ To install the code in this repository, follow these steps:
 
 1. Clone the repository:
 
-   ` git clone https://github.com/manas-shinde/Build-RESTful-APIs-with-Django-REST-Framework.git`
+   ```bash
+    git clone https://github.com/manas-shinde/Build-RESTful-APIs-with-Django-REST-Framework.git
+
+   ```
 
 2. Create a virtual environment:
 
-   `python -m venv env`
+   ```bash
+   python -m venv env
+
+   ```
 
 3. Activate the virtual environment:
 
-   `source env/bin/activate (Unix-based systems) or env\Scripts\activate (Windows)`
+   ```bash
+   source env/bin/activate (Unix-based systems) or env\Scripts\activate (Windows)
+
+   ```
 
 4. Install the required packages:
 
-   ` pip install -r requirements.txt`
+   ```bash
+    pip install -r requirements.txt
+
+   ```
 
 5. Create database in MySQL:
 
-   `CREATE DATABASE storefront3;`
+   ```bash
+   CREATE DATABASE storefront3;
+
+   ```
 
 6. Migrate the database:
 
-   `python manage.py migrate`
+   ```bash
+   python manage.py migrate
+   ```
 
 ## Usage
 
@@ -91,11 +108,17 @@ To run the application, follow these steps:
 
 6. Activate the virtual environment:
 
-   `source env/bin/activate (Unix-based systems) or env\Scripts\activate (Windows)`
+   ```bash
+   source env/bin/activate (Unix-based systems) or env\Scripts\activate (Windows)
+
+   ```
 
 7. Run the development server:
 
-   `python manage.py runserver`
+   ```bash
+   python manage.py runserver
+
+   ```
 
 8. Open a web browser and go to http://localhost:8000 to see the API homepage.
 
@@ -107,15 +130,24 @@ Contributions to this project are welcome! To contribute, follow these steps:
 
 2. Create a new branch for your feature:
 
-   `git checkout -b feature/my-feature`
+   ```bash
+   git checkout -b feature/my-feature
+
+   ```
 
 3. Make your changes and commit them:
 
-   `git commit -am 'Add some feature'`
+   ```bash
+   git commit -am 'Add some feature'
+
+   ```
 
 4. Push to the branch:
 
-   ` git push origin feature/my-feature`
+   ```bash
+    git push origin feature/my-feature
+
+   ```
 
 5. Submit a pull request
 
