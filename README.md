@@ -2,6 +2,41 @@
 
 The repository covers topics such as setting up a Django project, creating serializers, implementing authentication and permissions, handling requests and responses, versioning, pagination, and filtering. It also covers advanced topics such as handling file uploads, implementing nested resources, and creating custom renderers.
 
+### Features :
+
+1. Category
+2. Products
+3. Cart
+4. User
+5. create a order, update order status(only admin can do that)
+6. Image Upload ( for products)
+7. Generate a JSON Token to access specific API's
+8. performance tests
+9. Implemented caching
+10. Running background tasks
+
+• Authentication : JWT
+
+• Parallel Tasking -> Celery
+
+• Cache -> Redis
+
+• Database -> PostgreSQL
+
+## when you start locally :
+
+```
+mysql -u root -p
+
+create database storefront3;
+
+docker run -d -p 6379:6379 redis
+
+python manage.py runserver
+```
+
+Docker File coming soon !
+
 ## Prerequisites
 
 1. Basic understanding of Django structure
@@ -14,10 +49,13 @@ The repository covers topics such as setting up a Django project, creating seria
 
 ## Table of Contents
 
-    Installation
-    Usage
-    Contributing
-    License
+[Installation](#installation)
+
+[Usage](#usage)
+
+[Contributing](#contributing)
+
+[Pytest](#running-the-tests)
 
 ## Installation
 
@@ -39,7 +77,11 @@ To install the code in this repository, follow these steps:
 
    ` pip install -r requirements.txt`
 
-5. Migrate the database:
+5. Create database in MySQL:
+
+   `CREATE DATABASE storefront3;`
+
+6. Migrate the database:
 
    `python manage.py migrate`
 
@@ -76,36 +118,6 @@ Contributions to this project are welcome! To contribute, follow these steps:
    ` git push origin feature/my-feature`
 
 5. Submit a pull request
-
-### Features :
-
-1. Category
-2. Products
-3. Cart
-4. User , User Group
-5. Image Upload ( not configured )
-
-• Authentication : JWT (JSON Token)
-
-• Parallel Tasking -> Celery
-
-• Cache -> Redis
-
-• Database -> MySQL
-
-when you start locally :
-
-```
-mysql -u root -p
-
-create database storefront3;
-
-docker run -p 6379:6379 redis
-
-python manage.py runserver
-```
-
-Docker File coming soon !
 
 ## Running the tests
 
