@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check PR Title
-        uses: actions-ecosystem/action-verify-pr-title@v1
+        uses: marvinpinto/action-automatic-rebase@v1
         with:
           regex: "^[Enhancement|Bugfix|Tidy|Feat]+ [A-Z][a-z]+$"
           error-message: 'PR title must be in the type "[Enhancement|Bugfix|Tidy|Feat]" and short desciption.'
