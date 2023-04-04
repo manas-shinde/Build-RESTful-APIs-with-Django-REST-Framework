@@ -1,15 +1,44 @@
-name: PR Title Check
+name: PR Title Validator
 
 on:
   pull_request:
-    types: [opened, edited, reopened]
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+
 
 jobs:
-  pr_title_check:
+  check-pr-title:
     runs-on: ubuntu-latest
     steps:
-      - name: Check PR Title
-        uses: marvinpinto/action-automatic-rebase@v1
+      - name: Check PR title
+        uses: actions/github-script@v4
         with:
-          regex: "^[Enhancement|Bugfix|Tidy|Feat]+ [A-Z][a-z]+$"
-          error-message: 'PR title must be in the type "[Enhancement|Bugfix|Tidy|Feat]" and short desciption.'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const PR_TITLE = "${{ github.event.pull_request.title }}";
+            let regex = /^(BUGFIX|FEATURE|TIDY|ENHANCEMENTS) : .+/;
+            if (
+            !(
+            PR_TITLE.startsWith("BUGFIX") ||
+            PR_TITLE.startsWith("FEATURE") ||
+            PR_TITLE.startsWith("TIDY")
+            )
+            ) {
+            console.error("PR Title does not start with ' BUGFIX | FEATURE | TIDY | ENHANCEMENTS' keywords."
+            );
+            process.exit(1);
+            }else if (!regex.test(PR_TITLE)) {
+            console.error(
+            "PR Title is not in correct format please check Metron Standard PR Title:<Change_Type> : <PR description>"
+            );
+            process.exit(1);
+            }
