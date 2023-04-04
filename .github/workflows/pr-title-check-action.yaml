@@ -30,7 +30,8 @@ jobs:
             !(
             PR_TITLE.startsWith("BUGFIX") ||
             PR_TITLE.startsWith("FEATURE") ||
-            PR_TITLE.startsWith("TIDY")
+            PR_TITLE.startsWith("TIDY") ||
+            PR_TITLE.startsWith("ENHANCEMENTS")
             )
             ) {
             console.error("PR Title does not start with ' BUGFIX | FEATURE | TIDY | ENHANCEMENTS' keywords."
